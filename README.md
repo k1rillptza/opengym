@@ -179,6 +179,12 @@ device-code sign-in in the dashboard. See [the AI Coach guide](docs/AI_COACH.md)
 [the self-hosting guide](docs/SELF_HOSTING.md#8-the-ai-coach-optional), and the setup
 walkthroughs for [Claude](Claude-setup-instructions.md) and [ChatGPT/Codex](ChatGPT-setup-instructions.md).
 
+## Telegram Mini App on Vercel
+
+This fork also includes a serverless deployment path for a Telegram Mini App: Telegram-signed
+login, Vercel hosting/functions, and private Supabase-backed state sync. See
+**[Telegram + Vercel + Supabase deployment](docs/TELEGRAM_VERCEL.md)**.
+
 ## Roadmap
 
 Rough, community-driven — ideas and PRs welcome:
