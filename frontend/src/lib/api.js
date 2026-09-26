@@ -1,3 +1,5 @@
+import { telegramInitData } from './telegram.js'
+
 // Backend + WebAuthn helpers (ported from the vanilla app).
 export const IS_APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)
 export const IS_ANDROID = /Android/.test(navigator.userAgent)
@@ -6,7 +8,10 @@ export const VAULT = IS_APPLE ? 'iCloud Keychain' : IS_ANDROID ? 'Google Passwor
 export const webauthnOK = () => !!(window.PublicKeyCredential && navigator.credentials)
 
 export async function api(path, opts) {
-  const r = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts))
+  const initData = telegramInitData()
+  const headers = { 'Content-Type': 'application/json', ...(opts?.headers || {}) }
+  if (initData) headers['X-Telegram-Init-Data'] = initData
+  const r = await fetch(path, { ...opts, headers })
   const data = await r.json().catch(() => ({}))
   if (!r.ok) { const e = new Error(data.error || ('HTTP ' + r.status)); e.status = r.status; throw e }
   return data

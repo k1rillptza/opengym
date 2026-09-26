@@ -7,6 +7,7 @@ import { DEMO, REPO } from '../lib/demo.js'
 import { useState, useRef, useEffect } from 'react'
 import Icon from '../components/Icon.jsx'
 import { Button } from '../components/ui.jsx'
+import { isTelegramMiniApp } from '../lib/telegram.js'
 
 function RegisterSheet({ close }) {
   const { setUser, pushState, pullState } = useStore()
@@ -43,10 +44,19 @@ function RegisterSheet({ close }) {
 }
 
 export default function Login() {
-  const { setUser, pullState, setGuest } = useStore()
+  const { setUser, pullState, setGuest, config } = useStore()
+  const telegramMode = !!config?.telegram || isTelegramMiniApp()
   const signIn = async () => {
     try { const u = await passkeyLogin(); setUser(u); await pullState(); useUI.getState().toast(t('Welcome back, {0}', u.name)) }
     catch (e) { if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') useUI.getState().toast(e.message || t('Sign-in failed')) }
+  }
+  const signInTelegram = async () => {
+    try {
+      const { user } = await api('/api/me')
+      setUser(user)
+      await pullState()
+      useUI.getState().toast(t('Welcome back, {0}', user.name))
+    } catch (e) { useUI.getState().toast(e.message || t('Sign-in failed')) }
   }
   const head = <>
     <div style={{ fontSize: 54, display: 'flex', justifyContent: 'center', color: 'var(--acc)' }}><Icon name="dumbbell" /></div>
@@ -65,6 +75,25 @@ export default function Login() {
       </div>
       <div className="dim small" style={{ marginTop: 22, lineHeight: 1.6 }}>
         <a href={REPO} target="_blank" rel="noopener">{t('Self-host it in a minute →')}</a>
+      </div>
+    </div>
+  )
+
+  if (telegramMode) return (
+    <div className="narrow" style={wrap}>
+      {head}
+      <div className="muted" style={{ marginBottom: 34 }}>{t('Your workouts. Synced securely with Telegram.')}</div>
+      {isTelegramMiniApp() ? (
+        <Button variant="primary" icon="person" onClick={signInTelegram}>{t('Continue with Telegram')}</Button>
+      ) : (
+        <div className="card small muted" style={{ textAlign: 'left' }}>
+          {t('Open this Mini App from your Telegram bot to sign in and sync your workouts.')}
+        </div>
+      )}
+      <div style={{ height: 10 }} />
+      <Button variant="ghost" className="dim" onClick={() => setGuest(true)}>{t('Continue on this device only')}</Button>
+      <div className="dim small" style={{ marginTop: 26, lineHeight: 1.5 }}>
+        {t('Telegram verifies your identity. Your training data is stored in your private cloud profile.')}
       </div>
     </div>
   )
