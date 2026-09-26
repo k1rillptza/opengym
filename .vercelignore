@@ -1,0 +1,13 @@
+# The legacy self-hosted API is not deployed on Vercel. Only api/gateway.js
+# is required for the Telegram Mini App serverless backend.
+api/coach/
+api/test/
+api/server.js
+api/Dockerfile
+api/package.json
+api/package-lock.json
+
+# Native mobile projects and large source-only assets are not needed at runtime.
+frontend/android/
+frontend/ios/
+openGym_AI_Strategy.pdf
